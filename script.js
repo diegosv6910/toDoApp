@@ -30,16 +30,19 @@ function buildTable(data) {
 
     //Recorreremos cada elemento que hay dentro de data que son objetos en este caso y le pondremos un index
     //para saber en que elemento estamos.
-    data.forEach(function (object) {
+    data.forEach(function (object, index) {
         //Crearemos una variable row que sea igual a un elemento HTML tr
         var row = document.createElement("tr");
         //En la variable fields vamos a almacenar los Keys de data (Tarea, Status, Finalizada, Eliminar).
         fields.forEach(function (field) {
+            if (field == undefined) {
+                field = "vacio";
+            }
             //Crearemos una variable cell que sea igual a un elemento HTML td
             var cell = document.createElement("td");
             //Vamos a verificar que si el valor de alguna celda es igual a "En Progreso" entonces reemplazaremos
             //Ese String y lo convertiremos a un boton
-            if (object[field] === "En Progreso") {
+            if (object[field] === "En Progreso" && object[field] !== undefined) {
                 //Creamos una variable completeButton que sea igual a un nodoHijo de cell que contenga un elemento
                 //HTML de tipo Input
                 //Con esto sustituimos en cell el texto que tenia por un Input.
@@ -56,7 +59,7 @@ function buildTable(data) {
                 });
                 //Vamos a verificar que si el valor de alguna celda es igual a "Eliminar" entonces reemplazaremos
                 //Ese String y lo convertiremos a un boton
-            } else if (object[field] === "Eliminar") {
+            } else if (object[field] === "Eliminar" && object[field] != undefined) {
                 //Creamos una variable completeButton que sea igual a un nodoHijo de cell que contenga un elemento
                 //HTML de tipo Input
                 //Con esto sustituimos en cell el texto que tenia por un Input.
@@ -72,7 +75,7 @@ function buildTable(data) {
                     console.log(object[fields[0]]);
                     deleteRegister(object[fields[0]], "Finalizada");
                 });
-            } else {
+            } else if (object[field] != undefined) {
                 //Si no se cumple ninguna condicion anterior unicamente insertaremos el texto con la informacion.
                 //No se crearan ningun boton.
                 cell.appendChild(document.createTextNode(object[field]));
@@ -124,9 +127,14 @@ function deleteRegister(name) {
             //por los completados se quedaran sin definir. Por eso hay que poner una segunda condicion en la
             //que unicamente valide los datos que sean distintos a undefined.
             if (object[field] === name && object[field] != undefined) {
-                //Usaremos delete que elimina un elemento del arreglo data y le diremos que elimine la informacion
-                //que este en la posicion [index].
-                delete data[index]
+                //Crearemos un nuevo arreglo donde le almacenaremos el valor de data.
+                var newTodos = [...this.data];
+                //Luego en el nuevo arreglo newTodos en su campo Index recordando que Index viene de la primera iteracion
+                //y nos indica en que elemento del arreglo estamos, lo vamos a igualar a el mismo y pondremos todos
+                //sus valores en null.
+                newTodos[index] = { ...newTodos[index], Tarea: null, Status: null, Finalizada: null, Eliminar: null}
+                //Luego de hacer la copia simplemente a data le vamos a asignar el arreglo sustituido.
+                data = newTodos;
             }
         })
     })
